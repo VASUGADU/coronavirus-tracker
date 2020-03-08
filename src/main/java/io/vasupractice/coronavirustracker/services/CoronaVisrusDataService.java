@@ -20,6 +20,11 @@ import java.util.List;
 public class CoronaVisrusDataService {
 
     private static String VIRUS_DATA_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
+
+    public List<LocationStats> getAllStats() {
+        return allStats;
+    }
+
     private List<LocationStats> allStats = new ArrayList<>();
 
     @PostConstruct
@@ -37,8 +42,10 @@ public class CoronaVisrusDataService {
             LocationStats stats = new LocationStats();
             stats.setState(record.get("Province/State"));
             stats.setCountry(record.get("Country/Region"));
-            stats.setLatestTotalCases(Integer.parseInt(record.get(record.size() - 1)));
-            System.out.println(stats);
+            int latestCases = Integer.parseInt(record.get(record.size() - 1));
+            int prevDayCases = Integer.parseInt(record.get(record.size() - 2));
+            stats.setLatestTotalCases(latestCases);
+            stats.setDiffFromPrevDay(latestCases - prevDayCases);
             newStats.add(stats);
         }
         this.allStats = newStats;
